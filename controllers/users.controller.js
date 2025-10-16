@@ -9,8 +9,8 @@ const user = (req, res) => {
         });
     }
 
-    let token = req.headers.authorization.split(" ");
-    console.log(token);
+    // let token = req.headers.authorization.split(" ");
+
 
     let { name } = req.query;
     console.log(name);
@@ -40,9 +40,9 @@ const user = (req, res) => {
 };
 
 const addUser = (req, res) => {
-    let { name, age, status } = req.body;
+    let { id, name, age, status } = req.body;
 
-    array.push({ name, age, status });
+    array.push({ id, name, age, status });
 
     res.send({
         success: true,
@@ -51,28 +51,33 @@ const addUser = (req, res) => {
 }
 
 const userDelete = (req, res) => {
-  let { id } = req.params;
+    let { id } = req.params;
 
-  // you can use findIndex and splice
-  let index = array.findIndex((item) => item.id == id);
-  if (index == -1) {
-    res.status(404).send({
-      success: false,
-      message: "User not found",
+    // you can use findIndex and splice
+    let index = array.findIndex((item) => item.id == id);
+    if (index == -1) {
+        res.status(404).send({
+            success: false,
+            message: "User not found",
+        });
+        return;
+    }
+    array.splice(index, 1);
+
+    res.send({
+        success: true,
+        message: "User deleted success",
     });
-    return;
-  }
-  array.splice(index, 1);
 
-  // also you can use filter
-  let newArray = array.filter((item) => item.name.toLowerCase() != name);
-  array = [];
-  array = newArray;
+    // also you can use filter
+    // let newArray = array.filter((item) => item.name.toLowerCase() != name);
+    // array = [];
+    // array = newArray;
 
-  res.send({
-    success: true,
-    message: "User deleted success",
-  });
+    // res.send({
+    //     success: true,
+    //     message: "User deleted success",
+    // });
 }
 
-module.exports = {user, addUser, userDelete};
+module.exports = { user, addUser, userDelete };
