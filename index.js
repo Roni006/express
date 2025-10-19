@@ -16,8 +16,7 @@ app.use(express.static('upload'));
 app.use(router); 
 
 // home route
-app.get("/", (req, res) => {
-//  console.log(uuidv4());
+app.get("/", (req, res) => { 
  
   res.send({
     success: true,
