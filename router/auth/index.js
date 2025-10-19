@@ -1,10 +1,18 @@
-const { user, addUser, userDelete } = require("../../controllers/users.controller");
+const { user, addUser, userDelete, singleUser, updatedUser } = require("../../controllers/users.controller");
 const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
 
 const router = require("express").Router();
 
+// all users route 
+router.get("/users", CheckUserMiddleWare, user);
+
 // single users route 
-router.get("/users",CheckUserMiddleWare ,user);
+router.get("/users/:id", CheckUserMiddleWare, singleUser);
+
+
+// updated users route 
+router.patch("/users/update/:id", updatedUser);
+
 
 // new user add
 router.post("/users/add", addUser);

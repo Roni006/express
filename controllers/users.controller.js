@@ -1,48 +1,74 @@
-const array = require("../model/user.model");
+const userModel = require("../model/user.model")
 
-const user = (req, res) => {
+const user = async (req, res) => {
     // চেক কর authorization আছে কি না
-    if (!req.headers.authorization) {
-        return res.status(401).send({
-            success: false,
-            message: "Authorization header missing!",
-        });
-    }
+    // if (!req.headers.authorization) {
+    //     return res.status(401).send({
+    //         success: false,
+    //         message: "Authorization header missing!",
+    //     });
+    // }
 
-    // let token = req.headers.authorization.split(" ");
+    try {
+        let allUsers = await userModel.find({ address: "dhaka" });
 
-
-    let { name } = req.query;
-    console.log(name);
-
-    if (name) {
-        let user = array.filter(
-            (item) => item.name.toLowerCase() == name.toLowerCase()
-        );
-        if (user.length == 0) {
-            return res.status(404).send({
-                success: false,
-                message: "User not found",
-            });
-        }
-        return res.status(200).send({
+        res.status(200).send({
             success: true,
-            message: "User found",
-            data: user,
+            message: "Users found",
+            data: allUsers,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
         });
     }
 
-    res.status(200).send({
-        success: true,
-        message: "All Users found",
-        data: array,
-    });
 };
 
-const addUser = (req, res) => {
-    let { id, name, age, status } = req.body;
+// ! singleUser
+const singleUser = async (req, res) => {
+    let { id } = req.params;
+    try {
+        let user = await userModel.findOne({ _id: id });
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: "Users Not found",
+            });
+        }
 
-    array.push({ id, name, age, status });
+        res.status(200).send({
+            success: true,
+            message: "Users found",
+            data: user,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        });
+    }
+
+};
+
+// ! addUser
+const addUser = async (req, res) => {
+    let { name, address, phone, email, password } = req.body;
+
+    try {
+        let newUser = new userModel({ name, email, address, phone, password })
+        await newUser.save();
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        });
+    }
 
     res.send({
         success: true,
@@ -50,34 +76,59 @@ const addUser = (req, res) => {
     });
 }
 
-const userDelete = (req, res) => {
+// ! update user 
+const updatedUser = async (req, res) => {
     let { id } = req.params;
+    let { name, address, phone, email, password } = req.body;
 
-    // you can use findIndex and splice
-    let index = array.findIndex((item) => item.id == id);
-    if (index == -1) {
-        res.status(404).send({
+    try {
+        let updateUser = await userModel.findOneAndUpdate(
+            { _id: id },
+            { name, address, phone, email, password },
+            { new: true }
+        );
+
+        res.status(200).send({
+            success: true,
+            message: "user Upated",
+            data: updateUser
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
             success: false,
-            message: "User not found",
-        });
-        return;
+            message: error.message
+        })
     }
-    array.splice(index, 1);
-
-    res.send({
-        success: true,
-        message: "User deleted success",
-    });
-
-    // also you can use filter
-    // let newArray = array.filter((item) => item.name.toLowerCase() != name);
-    // array = [];
-    // array = newArray;
-
-    // res.send({
-    //     success: true,
-    //     message: "User deleted success",
-    // });
 }
 
-module.exports = { user, addUser, userDelete };
+// ! userDelete
+const userDelete = async (req, res) => {
+    let { id } = req.params;
+
+    try {
+        let data = await userModel.findByIdAndDelete({ _id: id });
+        if (!data) {
+            return res.status(404).send({
+                success: false,
+                message: "user not found"
+            });
+        }
+        res.status(200).send({
+            success: true,
+            message: "user dleted",
+            data: data
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        })
+    }
+
+}
+
+module.exports = { user, addUser, singleUser, userDelete, updatedUser };

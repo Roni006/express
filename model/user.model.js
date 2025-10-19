@@ -3,25 +3,32 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    minLength: [4, "Name must be atlest 4 character"],
+    maxLength: [16, "Name must be at most 16 character"],
+    required: [true, "name is require "]
   },
-  emial: {
+  email: {
     type: String,
-    unique: true,
+    unique: [true, "Email already Exist"],
     required: true
   },
   password: {
     type: String,
-    enum: ['Dhaka', 'Khulna', 'Rongpur'],
     required: true
   },
-  addresss: {
+  address: {
     type: String,
+    enum: ['dhaka', 'khulna', 'rongpur'],
+    required: true
 
   },
   phone: {
-    type: String
-  }
-});
+    type: String,
+  },
+
+},
+  {
+    timestamps: true,
+  });
 
 module.exports = mongoose.model('user', userSchema);
