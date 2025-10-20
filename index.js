@@ -3,12 +3,16 @@ const express = require("express");
 const app = express(); 
 const router = require('./router');
 const connectDb = require('./config/db.config');
+const cors = require('cors')
 let port = process.env.PORT; 
 
 connectDb(); 
 
  
 //! middle ware
+app.use(cors({
+  origin: "http://127.0.0.1:5500"
+}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('upload')); 
