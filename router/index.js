@@ -4,3 +4,4 @@ const auth = require('./auth');
 
 router.use("/api/auth",auth)
 module.exports = router;
+
