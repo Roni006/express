@@ -1,16 +1,120 @@
-const userModel = require("../model/user.model")
+// todo: NECESSERY IMPORTS
+const userModel = require("../model/user.model");
+const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+// todo: NECESSERY IMPORTS
 
-const user = async (req, res) => {
-    // চেক কর authorization আছে কি না
-    // if (!req.headers.authorization) {
-    //     return res.status(401).send({
-    //         success: false,
-    //         message: "Authorization header missing!",
-    //     });
-    // }
+
+// ! registerUser
+const registerUser = async (req, res) => {
+    const { name, email, password } = req.body;
 
     try {
-        let allUsers = await userModel.find({ address: "dhaka" });
+
+        bcrypt.hash(password, 10, async function (err, hash) {
+            // Store hash in your password DB.
+            if (err) {
+                console.log(err);
+                res.status(500).send({
+                    success: false,
+                    message: err
+                });
+            }
+            else {
+                let newUser = new userModel({ name, email, password: hash });
+                await newUser.save();
+
+                res.status(201).send({
+                    success: true,
+                    message: "User Registered Successfully",
+                    data: newUser,
+                });
+            }
+        });
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+// ! LoginrUser
+
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        let existUser = await userModel.findOne({ email });
+
+        if (existUser) {
+            bcrypt.compare(password, existUser.password, (err, data) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({
+                        success: false,
+                        message: err
+                    });
+                }
+                if (data) {
+                    let userdata =
+                    {
+                        id: existUser._id,
+                        name: existUser.name,
+                        email: existUser.email,
+                        phone: existUser.phone,
+                        address: existUser.address,
+                        isVerify: existUser.isVarify,
+                        image: existUser.image,
+                    }
+                    let token = jwt.sign(userdata, process.env.JWR_KEY,{
+                        expiresIn: '1m'
+                    });
+
+                    res.cookie('token', token, {
+                        maxAge: 60000,
+                    });
+
+                    console.log(token);
+                    res.status(200).send({
+                        success: true,
+                        message: "User Login Successfully",
+                        data: userdata,
+                    });
+                }
+                else {
+                    res.status(404).send({
+                        success: false,
+                        message: "Invalid Credentials",
+                    });
+                }
+            });
+        }
+        else {
+            res.status(404).send({
+                success: false,
+                message: "User Not Found, Please Register",
+            });
+        }
+    }
+
+    catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+
+// ! all user
+const user = async (req, res) => {
+    try {
+        let allUsers = await userModel.find();
 
         res.status(200).send({
             success: true,
@@ -26,6 +130,7 @@ const user = async (req, res) => {
     }
 
 };
+
 
 // ! singleUser
 const singleUser = async (req, res) => {
@@ -131,4 +236,12 @@ const userDelete = async (req, res) => {
 
 }
 
-module.exports = { user, addUser, singleUser, userDelete, updatedUser };
+module.exports = {
+    registerUser,
+    loginUser,
+    user,
+    addUser,
+    singleUser,
+    userDelete,
+    updatedUser,
+};
