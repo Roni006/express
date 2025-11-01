@@ -238,6 +238,8 @@ const verifyUser = async (req, res) => {
 
     try {
         let tokenExist = await verifyEmailModel.findOne({ token });
+        //! let tokenExist = await verifyEmailModel.findOne({ token }).populate("userId");
+        //! when i use this ☝🏻☝🏻 line then the error occur 
         if (!tokenExist) {
             return res.status(404).send({
                 success: false,
