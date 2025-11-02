@@ -6,7 +6,8 @@ const {
     updatedUser,
     registerUser,
     loginUser, 
-    verifyUser} = require("../../controllers/users.controller");
+    verifyUser,
+    resendVerificationEmail} = require("../../controllers/users.controller");
 const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
 
 const router = require("express").Router();
@@ -19,6 +20,9 @@ router.post("/login", loginUser)
 
 //verify user
 router.get("/verify", verifyUser)
+
+//resend Email
+router.post("/resend", resendVerificationEmail)
 
 
 // all users route 

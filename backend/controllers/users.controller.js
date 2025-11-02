@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
                 await sentDoken.save();
 
 
-                let verificationLink = `http://localhost:5000/api/auth/verify?email=${email}&token=${token}`
+                let verificationLink = `http://localhost:5000/api/auth/verify?email=${email}&token=${token}`;
 
 
                 let body = `<!DOCTYPE html>
@@ -189,7 +189,8 @@ const loginUser = async (req, res) => {
                         email: existUser.email,
                         phone: existUser.phone,
                         address: existUser.address,
-                        isVerify: existUser.isVarify,
+                        isVerify: existUser.isVerify,
+                        // ! sdfdfss
                         image: existUser.image,
                     }
                     let token = jwt.sign(userdata, process.env.JWR_KEY, {
@@ -231,15 +232,14 @@ const loginUser = async (req, res) => {
         })
     }
 }
-
+// ! verifyUser
 const verifyUser = async (req, res) => {
     const { email, token } = req.query;
     console.log(email, token);
 
     try {
-        let tokenExist = await verifyEmailModel.findOne({ token });
-        //! let tokenExist = await verifyEmailModel.findOne({ token }).populate("userId");
-        //! when i use this ☝🏻☝🏻 line then the error occur 
+        let tokenExist = await verifyEmailModel.findOne({ token }).populate("userId");
+
         if (!tokenExist) {
             return res.status(404).send({
                 success: false,
@@ -247,13 +247,202 @@ const verifyUser = async (req, res) => {
             })
         }
         console.log(tokenExist);
-        res.send("ok")
+
+        //! ekhnae prblm the hocche
+        let user = await userModel.findOneAndUpdate(
+            { _id: tokenExist.userId._id },
+            { isVarify: true },
+            { new: true }
+        );
+        //! ekhnae prblm the hocche
+
+
+        await verifyEmailModel.deleteOne({ _id: tokenExist._id })
+
+        res.status(200).send(`<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Email Verification</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 30px;">
+    <div style="max-width: 500px; margin: 0 auto; background: #ffffff; border-radius: 8px; padding: 20px; text-align: center;">
+      <h2 style="color: #333333;">Verify Your Email Address</h2>
+      <p style="font-size: 15px; color: #555555;">
+        Hi<b> ${user.name}</b>,<br /><br />
+        Thanks for signing up! Please click the button below to verify your email address and activate your account.
+      </p> 
+
+      <p style="margin-top: 25px; font-size: 13px; color: #777777;">
+        If the button doesn’t work, copy and paste this link into your browser:<br />
+      </p>
+
+      <hr style="margin-top: 25px; border: none; border-top: 1px solid #eeeeee;" />
+
+      <p style="font-size: 12px; color: #999999;">
+        If you didn’t request this, you can safely ignore this email.<br />
+        &copy;  2025 Western Ideal Institute. All rights reserved.
+      </p>
+    </div>
+  </body>
+</html>
+
+
+            `)
     } catch (error) {
         console.log(error);
         res.status(400).send({
             success: false,
             message: error.message
         });
+    }
+}
+
+const resendVerificationEmail = async (req, res) => {
+    let { email } = req.body
+
+    try {
+        let userExist = await userModel({ email });
+        if (!userExist) {
+            return res.status(404).send({
+                success: flase,
+                message: "Email Not Found",
+            })
+        }
+
+
+        let token = generateTokne();
+
+        await verifyEmailModel.deleteMany({ userID: userExist._id })
+
+        let sentDoken = new verifyEmailModel({ userId: userExist._id, token });
+
+        await sentDoken.save();
+
+
+        let verificationLink = `http://localhost:5000/api/auth/verify?email=${email}&token=${token}`;
+
+
+        let body = `<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Verify Your Email</title>
+
+    <style>
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f7f7f7;
+
+            padding: 20px;
+
+            color: #333;
+
+        }
+
+        .container {
+
+            max-width: 500px;
+
+            margin: auto;
+
+            background-color: #fff;
+
+            padding: 30px;
+
+            border-radius: 6px;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .code {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            background-color: #f0f0f0;
+
+            padding: 10px;
+
+            border-radius: 4px;
+
+            text-align: center;
+
+            letter-spacing: 2px;
+
+            margin: 20px 0;
+
+        }
+
+        .footer {
+
+            font-size:
+
+                12px;
+
+            color:
+
+                #777;
+
+            margin-top: 20px;
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Verify Your Email Addres</h2>
+
+        <p>Hi ${userExist.name}</p>
+
+        <p>Thank you for signing up!</p>
+
+        <p>Please use the verification code below to verify your email address:</p>
+
+        <div class="code">${verificationLink}</div>
+
+        <p>This code will expire in 10 minutes.</p>
+
+        <p>If you did not request this, you can safely ignore this email.</p>
+
+        <p>Thanks, <br>The Wii Team</p>
+        I 
+
+        <div class="footer">
+            &copy; 2025 Wii. All rights reserved.
+        </div>
+
+    </div>
+
+</body>
+
+                            </html>`;
+
+        await mail(userExist.email, "Verify Your Email", body);
+
+
+        res.status(200).send({
+            success: true,
+            message: "Verification Email Send",
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: flase,
+            message: error.message
+        });
+
     }
 }
 
@@ -386,6 +575,7 @@ module.exports = {
     registerUser,
     loginUser,
     verifyUser,
+    resendVerificationEmail,
     user,
     addUser,
     singleUser,
