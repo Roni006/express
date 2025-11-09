@@ -1,25 +1,26 @@
-const { default: mongoose } = require('mongoose'); 
+// const { default: mongoose } = require('mongoose'); 
 
-const verifyEmailSchema = new mongoose.Schema(
+const { default: mongoose } = require("mongoose");
+
+
+const verifyEmailModel = new mongoose.Schema(
     {
-        userId: {
+        userId:{
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+            ref: 'user'
         },
         token: {
             type: Number,
         },
-
-        expireAt: {
+        expiresAt: {
             type: Date,
-            default:  Date.now,
-            expire: 3600,
+            default: Date.now,
+            expires: 3600,
         }
+    },{
+        timestamps: true,
+    }
+)
 
-    }, {
-    timestamps: true,
-
-});
-
-module.exports = mongoose.model("VerifyEmail", verifyEmailSchema);
+module.exports = mongoose.model('verifyModel', verifyEmailModel)
 

@@ -5,10 +5,15 @@ const {
     singleUser,
     updatedUser,
     registerUser,
-    loginUser, 
+    loginUser,
     verifyUser,
-    resendVerificationEmail} = require("../../controllers/users.controller");
+    resendVerificationEmail,
+    updateUserPassword,
+    editUerProfile } = require("../../controllers/users.controller");
 const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
+const createUploadMiddleware = require("../../middleware/fileupload");
+//Upload image
+const upload = createUploadMiddleware({ type: "profile" })
 
 const router = require("express").Router();
 
@@ -19,11 +24,21 @@ router.post("/register", registerUser)
 router.post("/login", loginUser)
 
 //verify user
-router.get("/verify", verifyUser)
+router.get("/verify", verifyUser);
 
 //resend Email
-router.post("/resend", resendVerificationEmail)
+router.post("/resend", resendVerificationEmail);
 
+//update user password
+router.post("/update-password", CheckUserMiddleWare, updateUserPassword);
+
+// update user profile
+router.patch(
+    '/profile-update',
+    CheckUserMiddleWare,
+    upload.single("image"),
+    editUerProfile
+);
 
 // all users route 
 router.get("/users", CheckUserMiddleWare, user);

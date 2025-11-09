@@ -3,9 +3,9 @@ const userModel = require("../model/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const generateTokne = require("../utils/token");
-const verifyEmailModel = require("../model/verifyEmail.model");
 const mail = require("../utils/email");
-const nodemailer = require('nodemailer')
+// const nodemailer = require('nodemailer');
+const verifyEmailModel = require("../model/verifyEmail.model");
 // todo: NECESSERY IMPORTS
 
 
@@ -28,11 +28,17 @@ const registerUser = async (req, res) => {
                 let newUser = new userModel({ name, email, password: hash });
 
                 await newUser.save();
+                console.log("cretaed user");
+
+                await verifyEmailModel.deleteMany({ userId: newUser._id });
 
                 let token = generateTokne();
-                let sentDoken = new verifyEmailModel({ userId: newUser._id, token });
+                console.log("generateTokne");
+                let sentToken = new verifyEmailModel({ userId: newUser._id, token });
 
-                await sentDoken.save();
+                await sentToken.save();
+                console.log("sentToken save");
+
 
 
                 let verificationLink = `http://localhost:5000/api/auth/verify?email=${email}&token=${token}`;
@@ -194,11 +200,11 @@ const loginUser = async (req, res) => {
                         image: existUser.image,
                     }
                     let token = jwt.sign(userdata, process.env.JWR_KEY, {
-                        expiresIn: '1m'
+                        expiresIn: '10m'
                     });
 
                     res.cookie('token', token, {
-                        maxAge: 60000,
+                        maxAge: 600000, //10 min
                     });
 
                     console.log(token);
@@ -238,7 +244,8 @@ const verifyUser = async (req, res) => {
     console.log(email, token);
 
     try {
-        let tokenExist = await verifyEmailModel.findOne({ token }).populate("userId");
+        // let tokenExist = await verifyEmailModel.findOne({ token }).populate("userId");
+        let tokenExist = await verifyEmailModel.findOne({ token }).populate('userId');
 
         if (!tokenExist) {
             return res.status(404).send({
@@ -250,14 +257,14 @@ const verifyUser = async (req, res) => {
 
         //! ekhnae prblm the hocche
         let user = await userModel.findOneAndUpdate(
-            { _id: tokenExist.userId._id },
+            { _id: tokenExist.userId },
             { isVarify: true },
-            { new: true }
+            { new: true },
         );
         //! ekhnae prblm the hocche
+        console.log(user);
 
-
-        await verifyEmailModel.deleteOne({ _id: tokenExist._id })
+        await verifyEmailModel.deleteOne({ _id: tokenExist._id });
 
         res.status(200).send(`<!DOCTYPE html>
 <html>
@@ -302,10 +309,10 @@ const resendVerificationEmail = async (req, res) => {
     let { email } = req.body
 
     try {
-        let userExist = await userModel({ email });
+        let userExist = await userModel.findOne({ email });
         if (!userExist) {
             return res.status(404).send({
-                success: flase,
+                success: false,
                 message: "Email Not Found",
             })
         }
@@ -313,11 +320,11 @@ const resendVerificationEmail = async (req, res) => {
 
         let token = generateTokne();
 
-        await verifyEmailModel.deleteMany({ userID: userExist._id })
+        await verifyEmailModel.deleteMany({ userId: userExist._id })
 
-        let sentDoken = new verifyEmailModel({ userId: userExist._id, token });
+        let sentToken = new verifyEmailModel({ userId: userExist._id, token });
 
-        await sentDoken.save();
+        await sentToken.save();
 
 
         let verificationLink = `http://localhost:5000/api/auth/verify?email=${email}&token=${token}`;
@@ -446,6 +453,148 @@ const resendVerificationEmail = async (req, res) => {
     }
 }
 
+// ! Update User Password
+const updateUserPassword = async (req, res) => {
+    console.log(req.user);
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    try {
+        let existUser = await userModel.findOne({ _id: req.user.id })
+        if (!existUser) {
+            return res.status(401).send({
+                success: false,
+                message: "Unathorized User"
+            });
+        } else {
+            bcrypt.compare(oldPassword, existUser.password, (err, data) => {
+                if (err) {
+                    return res.status(401).send({
+                        success: false,
+                        message: "Unathorized User"
+                    });
+                }
+                else {
+                    if (newPassword == confirmNewPassword) {
+                        bcrypt.hash(newPassword, 10, async function (err, hash) {
+                            if (err) {
+                                return res.status(500).send({
+                                    success: false,
+                                    message: "Internel Server Error"
+                                });
+                            } else {
+                                let newPass = await userModel.findOneAndUpdate(
+                                    { _id: existUser._id },
+                                    { password: hash },
+                                    { new: true }
+                                );
+                                res.status(200).send({
+                                    success: true,
+                                    message: 'Password Updated Successfuly',
+                                    data: newPass
+                                })
+                            }
+                        })
+                    }
+                    else {
+                        return res.status(401).send({
+                            success: false,
+                            message: "New Password Did Not Match"
+                        });
+                    }
+                }
+            });
+        }
+
+        // res.send("ok")
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+// ! Eidt User Profile
+const editUerProfile = async (req, res) => {
+    if (!req.user) {
+        return res.status(404).send({
+            success: false,
+            message: "Unauthorized User"
+        })
+    }
+    let updateFields = {};
+
+    let profilePicture = req?.file?.filename;
+
+
+    let alloweedField = ['name', 'phone', 'address'];
+
+    alloweedField.map(field => {
+        if (req.body[field] !== undefined) {
+            updateFields[field] = req.body[field]
+        }
+    });
+
+    if (profilePicture) {
+        try {
+            let updateProfile = await userModel.findOneAndUpdate(
+                { _id: req.user.id },
+                { updateFields, image: `htttp://localhost:5000/${profilePicture}` },
+                {
+                    new: true,
+                }
+            );
+
+            return res.status.send(200).send({
+                success: true,
+                message: "Profile Updated Successfully",
+                data: updateProfile,
+            })
+        } catch {
+            console.log(error);
+            return res.status(400).send({
+                success: false,
+                message: error.message,
+            })
+        }
+
+    }
+
+    // res.send(req.file);
+    // return;
+
+
+    try {
+        let updateProfile = await userModel.findOneAndUpdate(
+            { _id: req.user.id },
+            updateFields,
+            {
+                new: true,
+            }
+        );
+
+
+        return res.status.send(200).send({
+            success: true,
+            message: "Profile Updated Successfully",
+            data: updateProfile,
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({
+            success: false,
+            message: error.message,
+        })
+    }
+
+    res.send(updateFields);
+
+}
+
+
 // ! all user
 const user = async (req, res) => {
     try {
@@ -465,7 +614,6 @@ const user = async (req, res) => {
     }
 
 };
-
 
 // ! singleUser
 const singleUser = async (req, res) => {
@@ -576,6 +724,8 @@ module.exports = {
     loginUser,
     verifyUser,
     resendVerificationEmail,
+    updateUserPassword,
+    editUerProfile,
     user,
     addUser,
     singleUser,
