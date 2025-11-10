@@ -527,12 +527,11 @@ const editUerProfile = async (req, res) => {
 
     let profilePicture = req?.file?.filename;
 
-
     let alloweedField = ['name', 'phone', 'address'];
 
-    alloweedField.map(field => {
+    alloweedField.map((field) => {
         if (req.body[field] !== undefined) {
-            updateFields[field] = req.body[field]
+            updateFields[field] = req.body[field];
         }
     });
 
@@ -540,18 +539,18 @@ const editUerProfile = async (req, res) => {
         try {
             let updateProfile = await userModel.findOneAndUpdate(
                 { _id: req.user.id },
-                { updateFields, image: `htttp://localhost:5000/${profilePicture}` },
+                { updateFields, image: `http://localhost:5000/${profilePicture}` },
                 {
                     new: true,
                 }
             );
 
-            return res.status.send(200).send({
+            return res.status(200).send({
                 success: true,
                 message: "Profile Updated Successfully",
                 data: updateProfile,
-            })
-        } catch {
+            });
+        } catch (error) {
             console.log(error);
             return res.status(400).send({
                 success: false,
@@ -575,12 +574,11 @@ const editUerProfile = async (req, res) => {
         );
 
 
-        return res.status.send(200).send({
+        return res.status(200).send({
             success: true,
             message: "Profile Updated Successfully",
             data: updateProfile,
-        })
-
+        });
 
     } catch (error) {
         console.log(error);
@@ -589,8 +587,7 @@ const editUerProfile = async (req, res) => {
             message: error.message,
         })
     }
-
-    res.send(updateFields);
+    // res.send(updateFields);
 
 }
 
