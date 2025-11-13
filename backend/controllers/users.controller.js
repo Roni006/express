@@ -516,22 +516,24 @@ const updateUserPassword = async (req, res) => {
 }
 
 // ! Eidt User Profile
-const editUerProfile = async (req, res) => {
+
+
+const editUserProfile = async (req, res) => {
     if (!req.user) {
-        return res.status(404).send({
-            success: false,
-            message: "Unauthorized User"
-        })
+        return res
+            .status(404)
+            .send({ success: false, message: "Unathorised User" });
     }
-    let updateFields = {};
+    // console.log(req.user);
+    // return ;
 
     let profilePicture = req?.file?.filename;
+    let updateFields = {};
+    let allowedFields = ["name", "phone", "address"];
 
-    let alloweedField = ['name', 'phone', 'address'];
-
-    alloweedField.map((field) => {
+    allowedFields.map((field) => {
         if (req.body[field] !== undefined) {
-            updateFields[field] = req.body[field];
+            updateFields[field] = req.body[field]; // updateFields.name = data
         }
     });
 
@@ -544,10 +546,9 @@ const editUerProfile = async (req, res) => {
                     new: true,
                 }
             );
-
             return res.status(200).send({
                 success: true,
-                message: "Profile Updated Successfully",
+                message: "Profile Update Success",
                 data: updateProfile,
             });
         } catch (error) {
@@ -555,14 +556,9 @@ const editUerProfile = async (req, res) => {
             return res.status(400).send({
                 success: false,
                 message: error.message,
-            })
+            });
         }
-
     }
-
-    // res.send(req.file);
-    // return;
-
 
     try {
         let updateProfile = await userModel.findOneAndUpdate(
@@ -572,24 +568,87 @@ const editUerProfile = async (req, res) => {
                 new: true,
             }
         );
-
-
         return res.status(200).send({
             success: true,
-            message: "Profile Updated Successfully",
+            message: "Profile Update Success",
             data: updateProfile,
         });
-
     } catch (error) {
         console.log(error);
         res.status(400).send({
             success: false,
             message: error.message,
-        })
+        });
     }
-    // res.send(updateFields);
+};
 
-}
+
+// const editUerProfile = async (req, res) => {
+//     if (!req.user) {
+//         return res.status(404).send({
+//             success: false,
+//             message: "Unauthorized User"
+//         })
+//     }
+//     let updateFields = {};
+
+//     let profilePicture = req?.file?.filename;
+
+//     let alloweedFields = ['name', 'phone', 'address'];
+
+//     alloweedFields.map((field) => {
+//         if (req.body[field] !== undefined) {
+//             updateFields[field] = req.body[field];
+//         }
+//     });
+
+//     if (profilePicture) {
+//         try {
+//             let updateProfile = await userModel.findOneAndUpdate(
+//                 { _id: req.user.id },
+//                 { updateFields, image: `http://localhost:5000/${profilePicture}` },
+//                 {
+//                     new: true,
+//                 }
+//             );
+
+//             return res.status(200).send({
+//                 success: true,
+//                 message: "Profile Updated Successfully",
+//                 data: updateProfile,
+//             });
+//         } catch (error) {
+//         npm i
+//         }
+
+//     } 
+
+
+//     try {
+//         let updateProfile = await userModel.findOneAndUpdate(
+//             { _id: req.user.id },
+//             updateFields,
+//             {
+//                 new: true,
+//             }
+//         );
+
+
+//         return res.status(200).send({
+//             success: true,
+//             message: "Profile Updated Successfully",
+//             data: updateProfile,
+//         });
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(400).send({
+//             success: false,
+//             message: error.message,
+//         })
+//     } 
+
+// }
 
 
 // ! all user
@@ -722,7 +781,7 @@ module.exports = {
     verifyUser,
     resendVerificationEmail,
     updateUserPassword,
-    editUerProfile,
+    editUserProfile,
     user,
     addUser,
     singleUser,

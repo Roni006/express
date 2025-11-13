@@ -9,7 +9,7 @@ const {
     verifyUser,
     resendVerificationEmail,
     updateUserPassword,
-    editUerProfile } = require("../../controllers/users.controller");
+    editUserProfile } = require("../../controllers/users.controller");
 const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
 const createUploadMiddleware = require("../../middleware/fileupload");
 //Upload image
@@ -37,7 +37,10 @@ router.patch(
     '/profile-update',
     CheckUserMiddleWare,
     upload.single("image"),
-    editUerProfile
+    editUserProfile
+    // (req, res) => {
+    //     return res.send('OK');
+    // }
 );
 
 // all users route 
