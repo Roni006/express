@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const auth = require('./auth');
-const category = require('./category')
+const category = require('./category');
+const product = require("./product");
 
 // http://localhost:5000/api/auth
 router.use("/api/auth", auth)
@@ -10,6 +11,7 @@ router.use("/api/category", category)
 
 
 // http://localhost:5000/api/product
+router.use("/api/product", product)
 
 module.exports = router;
 

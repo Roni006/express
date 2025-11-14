@@ -516,16 +516,12 @@ const updateUserPassword = async (req, res) => {
 }
 
 // ! Eidt User Profile
-
-
 const editUserProfile = async (req, res) => {
     if (!req.user) {
         return res
             .status(404)
             .send({ success: false, message: "Unathorised User" });
     }
-    // console.log(req.user);
-    // return ;
 
     let profilePicture = req?.file?.filename;
     let updateFields = {};
@@ -581,75 +577,7 @@ const editUserProfile = async (req, res) => {
         });
     }
 };
-
-
-// const editUerProfile = async (req, res) => {
-//     if (!req.user) {
-//         return res.status(404).send({
-//             success: false,
-//             message: "Unauthorized User"
-//         })
-//     }
-//     let updateFields = {};
-
-//     let profilePicture = req?.file?.filename;
-
-//     let alloweedFields = ['name', 'phone', 'address'];
-
-//     alloweedFields.map((field) => {
-//         if (req.body[field] !== undefined) {
-//             updateFields[field] = req.body[field];
-//         }
-//     });
-
-//     if (profilePicture) {
-//         try {
-//             let updateProfile = await userModel.findOneAndUpdate(
-//                 { _id: req.user.id },
-//                 { updateFields, image: `http://localhost:5000/${profilePicture}` },
-//                 {
-//                     new: true,
-//                 }
-//             );
-
-//             return res.status(200).send({
-//                 success: true,
-//                 message: "Profile Updated Successfully",
-//                 data: updateProfile,
-//             });
-//         } catch (error) {
-//         npm i
-//         }
-
-//     } 
-
-
-//     try {
-//         let updateProfile = await userModel.findOneAndUpdate(
-//             { _id: req.user.id },
-//             updateFields,
-//             {
-//                 new: true,
-//             }
-//         );
-
-
-//         return res.status(200).send({
-//             success: true,
-//             message: "Profile Updated Successfully",
-//             data: updateProfile,
-//         });
-
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({
-//             success: false,
-//             message: error.message,
-//         })
-//     } 
-
-// }
-
+ 
 
 // ! all user
 const user = async (req, res) => {

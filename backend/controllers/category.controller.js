@@ -37,14 +37,22 @@ const createNewCategory = async (req, res) => {
         })
 
     } catch (error) {
-        fs.unlink(path.join(`${__dirname} + "../uploads/category" + ${thumb}`))
+        fs.unlink(
+            `${path.join(__dirname, "../uploads/category", thumb)}`,
+            (err) => {
+                if (err) {
+                    console.log(err)
+                }
+
+                console.log("File Delete")
+            }
+        );
         console.log(error);
         return res.status(400).send({
             success: false,
             message: error.message,
         })
     }
-
 
 }
 
