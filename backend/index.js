@@ -1,30 +1,30 @@
 require('dotenv').config();
 const express = require("express");
-const app = express(); 
+const app = express();
 const cokkieParser = require('cookie-parser');
 const router = require('./router');
 const connectDb = require('./config/db.config');
 const cors = require('cors')
-let port = process.env.PORT; 
+let port = process.env.PORT;
 
-connectDb(); 
- 
+connectDb();
+
 //! middle ware
 app.use(cors({
-  origin: "http://127.0.0.1:5500"
+  origin: ["http://127.0.0.1:5500", "http://localhost:5173"]
 }))
-app.use(cokkieParser());  
+app.use(cokkieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('uploads/profile'));
 app.use(express.static('uploads/category'));
 
-app.use(router); 
+app.use(router);
 //! middle ware
 
 // home route
-app.get("/", (req, res) => { 
- 
+app.get("/", (req, res) => {
+
   res.send({
     success: true,
     message: "Welcome to server",
