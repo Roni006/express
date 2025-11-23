@@ -19,7 +19,7 @@ const Navbar = () => {
                                 <ul className='menu flex items-center gap-[50px] '>
                                     <li><Link to="/">Discovery</Link></li>
                                     <li><Link to="/about">About</Link></li>
-                                    <li><Link to="/contact">Conatat Us</Link></li>
+                                    <li><Link to="/contact">Conatat Us</Link></li> 
                                 </ul>
                             </nav>
                         </div>
