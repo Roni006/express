@@ -22,11 +22,18 @@ const AboutUs = () => {
       {/* About Section */}
       <section className="max-w-6xl mx-auto py-16 px-4 md:flex md:items-center md:gap-10">
         <div className="md:w-1/2">
-          <img
+          {/* <img
             src="https://via.placeholder.com/1600x300.png?text=About+Us+Banner"
             alt="About Us Banner"
             className="absolute w-full h-full object-cover opacity-50"
-          />
+          /> */}
+          <div className="md:w-1/2 relative h-64 md:h-80 lg:h-96">
+            <img
+              src="https://via.placeholder.com/1600x300.png?text=About+Us+Banner"
+              alt="About Us Banner"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 rounded-lg"
+            />
+          </div>
         </div>
         <div className="md:w-1/2 mt-8 md:mt-0">
           <h2 className="text-3xl font-bold mb-4">Who We Are</h2>
