@@ -2,6 +2,7 @@ import heroBg from "../assets/hero-bg.png"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import ProductList from "../screen/ProductList";
 
 const Discovery = () => {
   var settings = {
@@ -100,7 +101,8 @@ const Discovery = () => {
 
       </Slider >
       {/* // <!--? HERO - SECTION SECTION START-- > */}
-
+      
+      <ProductList />
     </>
 
   )
