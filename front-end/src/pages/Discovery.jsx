@@ -11,6 +11,8 @@ const Discovery = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    autoPlay: true,
+    autoplaySpeed: 1000, 
   };
   return (
     <>
@@ -102,7 +104,7 @@ const Discovery = () => {
       </Slider >
       {/* // <!--? HERO - SECTION SECTION START-- > */}
       
-      <ProductList />
+      {/* <ProductList /> */}
     </>
 
   )

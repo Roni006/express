@@ -1,5 +1,5 @@
 const { createNewCategory, getAllCategory, getSingleCategory, deleteCategory, updateCategory } = require("../../controllers/category.controller");
-const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
+const CheckUserMiddleWare = require("../../middleware/checkUserMiddleware");
 const createUploadMiddleware = require("../../middleware/fileupload");
 const categoryModel = require("../../model/category.model");
 

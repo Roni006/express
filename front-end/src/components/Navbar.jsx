@@ -17,7 +17,7 @@ const Navbar = () => {
                         <div className="menus hidden md:block sm:block">
                             <nav>
                                 <ul className='menu flex items-center gap-[50px] '>
-                                    <li><Link to="/">Discovery</Link></li>
+                                    <li><Link to="/">Home</Link></li>
                                     <li><Link to="/about">About</Link></li>
                                     <li><Link to="/contact">Conatat Us</Link></li> 
                                 </ul>

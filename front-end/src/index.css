@@ -1,15 +1,22 @@
 @import "tailwindcss";
 
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
 .menu li a,
-.mobile li a{
+.mobile li a {
     font-size: 18px;
     font-weight: 500;
-    transition: all .2s linear ;
+    transition: all .2s linear;
 
 }
-.menu li a:hover{
-    color: #53cd8a; 
+
+.menu li a:hover {
+    color: #53cd8a;
 }
-.mobile li a:hover{
-    color: #ffffff; 
+
+.mobile li a:hover {
+    color: #ffffff;
 }

@@ -60,9 +60,7 @@
 
 // export default App
 
-
-
-
+ 
 
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router"
 import Discovery from './pages/Discovery'
@@ -70,13 +68,16 @@ import About from './pages/About'
 import ContactUs from './pages/ContactUs'
 import RootLayOuts from "./pages/RootLayOuts"
 import Error from "./pages/Error"
+import ProductDetails from "./pages/ProductDetails"
+import Home from "./pages/Home"
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
         <Route element={<RootLayOuts />}>
-          <Route path="/" element={<Discovery />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="*" element={<Error/>} />

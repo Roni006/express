@@ -1,22 +1,32 @@
+// const categoryModel = require("../model/category.model");
 const productModel = require("../model/product.model");
 
 const createNewProduct = async (req, res) => {
     console.log(res.files);
     // return res.send("ok");
 
-    if (!req.user) {
-        return res
-            .status(404)
-            .send({
-                success: false,
-                message: "Undefined User"
-            });
-    }
+    // if (!req.user) {
+    //     return res
+    //         .status(404)
+    //         .send({
+    //             success: false,
+    //             message: "Undefined User"
+    //         });
+    // }
     let { name, description, sellingPrice, discountPrice, category } = req.body;
 
-    let images = req.files.map(image => {
+
+    let images = req.files.map((image) => {
         return `http://localhost:5000/${image.filename}`;
-    });
+    })
+
+    console.log(images);            
+    res.send("ok");
+
+
+    // let images = req.files.map((image) => {
+    //     return `${req.protocol}://${req.host}/${image.filename}`;
+    // });
 
     try {
         let newProduct = new productModel({
@@ -30,6 +40,16 @@ const createNewProduct = async (req, res) => {
         });
 
         await newProduct.save();
+
+        // await categoryModel.findOneAndUpdate(
+        //     { _id: category },
+        //     {
+        //         $push: {
+        //             products: newProduct._id,
+        //         },
+        //     }
+        // );
+
 
         res.status(201).send({
             success: true,
