@@ -2,27 +2,25 @@
 const productModel = require("../model/product.model");
 
 const createNewProduct = async (req, res) => {
-    console.log(res.files);
+    console.log(req.files);
     // return res.send("ok");
 
-    // if (!req.user) {
-    //     return res
-    //         .status(404)
-    //         .send({
-    //             success: false,
-    //             message: "Undefined User"
-    //         });
-    // }
+    if (!req.user) {
+        return res
+            .status(404)
+            .send({
+                success: false,
+                message: "Undefined User"
+            });
+    }
+
     let { name, description, sellingPrice, discountPrice, category } = req.body;
 
 
     let images = req.files.map((image) => {
         return `http://localhost:5000/${image.filename}`;
     })
-
-    console.log(images);            
-    res.send("ok");
-
+ 
 
     // let images = req.files.map((image) => {
     //     return `${req.protocol}://${req.host}/${image.filename}`;
@@ -56,6 +54,7 @@ const createNewProduct = async (req, res) => {
             message: "New Product Created",
             data: newProduct,
         });
+
     } catch (error) {
         console.log(error);
         return res
