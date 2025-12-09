@@ -1,7 +1,7 @@
 const { createNewCategory, getAllCategory, getSingleCategory, deleteCategory, updateCategory } = require("../../controllers/category.controller");
-const CheckUserMiddleWare = require("../../middleware/checkUserMiddleware");
+const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
 const createUploadMiddleware = require("../../middleware/fileupload");
-const categoryModel = require("../../model/category.model");
+// const categoryModel = require("../../model/category.model");
 
 const router = require("express").Router();
 const upload = createUploadMiddleware({ type: "category" })

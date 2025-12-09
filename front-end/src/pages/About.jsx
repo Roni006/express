@@ -1,7 +1,10 @@
 // AboutUs.jsx
-import React from "react";
+
+import { useLocation } from "react-router";
 
 const AboutUs = () => {
+  const data = useLocation();
+  console.log(data);
   return (
     <div className="w-full">
 
@@ -21,12 +24,7 @@ const AboutUs = () => {
 
       {/* About Section */}
       <section className="max-w-6xl mx-auto py-16 px-4 md:flex md:items-center md:gap-10">
-        <div className="md:w-1/2">
-          {/* <img
-            src="https://via.placeholder.com/1600x300.png?text=About+Us+Banner"
-            alt="About Us Banner"
-            className="absolute w-full h-full object-cover opacity-50"
-          /> */}
+        <div className="md:w-1/2"> 
           <div className="md:w-1/2 relative h-64 md:h-80 lg:h-96">
             <img
               src="https://via.placeholder.com/1600x300.png?text=About+Us+Banner"

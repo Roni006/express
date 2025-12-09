@@ -2,7 +2,7 @@ import ProductCard from "../components/common/ProductCard"
 
 const ProductList = () => {
     return (
-        <section className="mt-10">
+        <section className="my-10 ">
             <div className="container">
                 <h2 className="text-3xl text-black font-medium text-center">Product List</h2>
                 <p className="mt-1 text-center text-black font-medium text-base">Order it for you or for Your beloved ones</p>

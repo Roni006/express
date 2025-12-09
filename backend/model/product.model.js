@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const productSchema = new mongoose.Schema; ({
+const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema; ({
         type: String,
         required: true,
     },
-    image: [
+    images: [
         {
             type: String,
             required: true,
@@ -25,17 +25,16 @@ const productSchema = new mongoose.Schema; ({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "category",
-        require: true,
+        required: true,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        require: true,
+        required: true,
     }
-},
-{
-    timestamps: true,
-}
-);
+
+},{
+      timestamps: true,
+});
 
 module.exports = mongoose.model("product", productSchema);
