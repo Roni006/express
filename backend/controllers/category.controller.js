@@ -190,7 +190,7 @@ const deleteCategory = async (req, res) => {
         let split = deleteCategory.thumb.split("/");
         let actualFileName = split[split.length - 1];
         fs.unlink(
-            `${path.join(__dirname, "../uploads/category", actualFileName)}`,
+            `${path.join(__dirname, "../uploads/category/", actualFileName)}`,
             (err) => {
                 if (err) {
                     console.log(err);

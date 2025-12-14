@@ -1,4 +1,4 @@
-const { createNewProduct, getAllProducts, getSingleProduct } = require("../../controllers/product.controller");
+const { createNewProduct, getAllProducts, getSingleProduct, deleteProduct } = require("../../controllers/product.controller");
 const CheckUserMiddleWare = require("../../middleware/CheckUserMiddleWare");
 
 const createUploadMiddleware = require("../../middleware/fileupload");
@@ -14,8 +14,11 @@ router.get("/single/:id", getSingleProduct);
 router.post(
     "/create",
     CheckUserMiddleWare,
-    upload.array("images"), 
-    createNewProduct)
+    upload.array("images"),
+    createNewProduct
+);
+
+router.delete('/delete/:id', CheckUserMiddleWare, deleteProduct)
 
 
 

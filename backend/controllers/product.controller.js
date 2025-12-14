@@ -1,6 +1,8 @@
 // const categoryModel = require("../model/category.model");
 const categoryModel = require("../model/category.model");
 const productModel = require("../model/product.model");
+const fs = require("fs");
+const path = require('path')
 
 // ! get all product 
 const getAllProducts = async (req, res) => {
@@ -112,4 +114,61 @@ const createNewProduct = async (req, res) => {
     }
 };
 
-module.exports = { createNewProduct, getAllProducts, getSingleProduct }
+// !delete product a
+const deleteProduct = async (req, res) => {
+    if (!req.user) {
+        return res
+            .status(404)
+            .send({
+                success: false,
+                message: "Undefined User"
+            });
+    }
+
+    const { id } = req.params;
+
+    try {
+        let targetProduct = await productModel.findOneAndUpdate({ _id: id });
+
+
+        await categoryModel.findOneAndUpdate(
+            { _id: targetProduct.category },
+            {
+                $pull: {
+                    products: targetProduct._id,
+                },
+            },
+        );
+
+
+        targetProduct.images.map(image => {
+            let split = image.split("/");
+            let actualFileName = split[split.length - 1];
+            fs.unlink(
+                `${path.join(__dirname, "../uploads/product/", actualFileName)}`,
+                (err) => {
+                    if (err) {
+                        console.log(err);
+
+                    }
+                    console.log("File Deleted");
+                }
+            );
+        });
+
+        res.status(200).send({
+            success: true,
+            message: 'Product Deleted',
+            data: targetProduct
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).senn({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+module.exports = { createNewProduct, getAllProducts, getSingleProduct, deleteProduct }
